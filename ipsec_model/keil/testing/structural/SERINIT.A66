@@ -1,0 +1,55 @@
+$SEGMENTED
+$CASE
+
+$include (reg167.inc)
+
+$IF MEDIUM OR LARGE or HLARGE
+model	LIT	'FAR'
+$ELSE
+model	LIT	'NEAR'
+$ENDIF
+
+PUBLIC serinit, timerstop, timerstart
+ASSUME	DPP3:SYSTEM
+
+?PR?serinit	section	code 'ICODE'
+serinit	proc	model
+
+;*******************************
+;*** INIT SERIAL INTERFACE 0 ***
+;*******************************
+
+	BSET	P3.10		; SET PORT 3.10 OUTPUT LATCH (TXD)
+	BSET	DP3.10		; SET PORT 3.10 DIRECTION CONTROL (TXD OUTPUT)
+	BCLR	DP3.11		; RESET PORT 3.11 DIRECTION CONTROL (RXD INPUT)
+	MOVB	S0TIC,#080H	; SET TRANSMIT INTERRUPT FLAG
+	MOVB	S0RIC,#000H	; DELETE RECEIVE INTERRUPT FLAG
+	MOV	S0BG ,#0040H	; SET BAUDRATE TO 9600 BAUD
+	MOV	S0CON,#8011H	; SET SERIAL MODE
+	RET
+
+serinit	endp
+
+
+timerstart	proc	model
+		MOV	T2CON,#0
+		MOV	T3CON,#0
+		MOV	T2,#0
+		MOV	T3,#0
+		MOV	T3CON,#0040H
+		MOV	T2CON,#004FH
+		RET
+timerstart	endp
+
+
+timerstop	proc	model
+		MOV	T2CON,#0
+		MOV	T3CON,#0
+		MOV	R4,T3
+		MOV	R5,T2
+		RET
+timerstop	endp
+
+?PR?serinit ends
+
+	end

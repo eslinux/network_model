@@ -1,0 +1,16 @@
+HTTP/1.0 200 OK
+Content-Type: text/html
+
+<html>
+<head>
+</head>
+<body text="#000000" bgcolor="#FFFF99" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<center><table BORDER=0 COLS=1 WIDTH="90%" HEIGHT="85%" >
+<tr ALIGN=LEFT VALIGN=TOP>
+<td><b><font face="Verdana"><font size=+2>Embedded Web Server Test</font></font></b></td>
+</tr>
+</table>
+</center>
+</body>
+</html>

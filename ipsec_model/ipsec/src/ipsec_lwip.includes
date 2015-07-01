@@ -1,0 +1,16 @@
+include
+include/ipsec
+include/netif
+include/testing/config
+include/testing/functional/ipsec-lwip-integration
+include/testing/structural
+/home/ninhld/Github/embedded_ipsec_1.1_lwip/src/lwip/src/include
+/home/ninhld/Github/embedded_ipsec_1.1_lwip/src/lwip/src/include/ipv4
+/home/ninhld/Github/embedded_ipsec_1.1_lwip/src/lwip/src/include/ipv6
+/home/ninhld/Github/embedded_ipsec_1.1_lwip/src/lwip/src/include/lwip
+/home/ninhld/Github/embedded_ipsec_1.1_lwip/src/lwip/src/include/netif
+core
+netif
+crypto/hmac
+testing/structural
+crypto/aes

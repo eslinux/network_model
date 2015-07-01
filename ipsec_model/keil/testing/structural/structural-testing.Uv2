@@ -1,0 +1,1018 @@
+### uVision2 Project, (C) Keil Software
+### Do not modify !
+
+Target (PhyCORE-167 HS/E - HW Debug), 0x0002 // Tools: '166/167'
+Target (PhyCORE-167 HS/E - HW Release), 0x0002 // Tools: '166/167'
+Target (MCB167-NET - HW Debug), 0x0002 // Tools: '166/167'
+Target (MCB167-NET - HW Release), 0x0002 // Tools: '166/167'
+Target (Simulator - Debug), 0x0002 // Tools: '166/167'
+Target (Simulator - Release), 0x0002 // Tools: '166/167'
+
+Group (include)
+Group (test_modules)
+Group (modules)
+Group (startup)
+
+File 1,5,<..\..\..\ipsec\src\include\testing\structural\structural_test.h><structural_test.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\md5.h><md5.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\ipsec.h><ipsec.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\des.h><des.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\sa.h><sa.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\debug.h><debug.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\types.h><types.h> 0x0 
+File 1,5,<..\..\..\ipsec\src\include\ipsec\util.h><util.h> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\main.c><main.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\core\util.c><util.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\ah_test.c><ah_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\des_test.c><des_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\esp_test.c><esp_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\sa_test.c><sa_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\util_test.c><util_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\md5_test.c><md5_test.c> 0x0 
+File 2,1,<..\..\..\ipsec\src\testing\structural\sha1_test.c><sha1_test.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\ah.c><ah.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\des.c><des.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\esp.c><esp.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\md5.c><md5.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\sa.c><sa.c> 0x0 
+File 3,1,<..\..\..\ipsec\src\core\sha1.c><sha1.c> 0x0 
+File 4,2,<.\Start-pC167HSE.a66><Start-pC167HSE.a66> 0x0 
+File 4,2,<.\SERINIT.A66><SERINIT.A66> 0x0 
+
+
+Options 1,0,0  // Target 'PhyCORE-167 HS/E - HW Debug'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=0
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_phycore167hse_debug)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=1
+ Browse=1
+ LstDir (.\bin\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=4
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=0
+ UseOnchipXRAM2=0
+ NearRam=0
+ NearRom=0
+ ExtMem 0 1,0,1048576
+ ExtMem 1 0,2097152,524288
+ ExtMem 2 0,3145728,524288
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=6
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=1
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=1
+ cMisc (MOD167 extins)
+ Define (PHYCORE167HSE LWIP_DEBUG __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=0
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab ()
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses (ICODE (0x0-0xEFFF), NCODE (0x0-0xEFFF), \~FCONST (0x0-0xEFFF), HCONST (0x0-0xEFFF), \~XCONST (0x0-0xEFFF), NCONST (0x4000-0x7FFF), \~NDATA (0x10000-0x13FFF), NDATA0 (0x10000-0x13FFF), \~SDATA (0xF200-0xFDFF), SDATA0 (0xF200-0xFDFF), \~IDATA (0xF200-0xFDFF), IDATA0 (0xF200-0xFDFF), \~FDATA (0x10000-0x1FFFF), FDATA0 (0x10000-0x1FFFF), \~HDATA (0x10000-0x1FFFF), HDATA0 (0x10000-0x1FFFF), \~XDATA (0x10000-0x1FFFF), XDATA0 (0x10000-0x1FFFF))
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 48126,-1,()()()()()()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 2,0,0  // Target 'PhyCORE-167 HS/E - HW Release'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=0
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_phycore167hse_release)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=0
+ Browse=0
+ LstDir (.\bin\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=4
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=0
+ UseOnchipXRAM2=0
+ NearRam=0
+ NearRom=0
+ ExtMem 0 1,262144,524287
+ ExtMem 1 0,2097152,524287
+ ExtMem 2 0,0,0
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=6
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=1
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=1
+ cMisc (MOD167 extins)
+ Define (PHYCORE167HSE __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=0
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab ()
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses (ICODE (0x0-0xEFFF), NCODE (0x0-0xEFFF), \~FCONST (0x0-0xEFFF), HCONST (0x0-0xEFFF), \~XCONST (0x0-0xEFFF), NCONST (0x4000-0x7FFF), \~NDATA (0x10000-0x13FFF), NDATA0 (0x10000-0x13FFF), \~SDATA (0xF200-0xFDFF), SDATA0 (0xF200-0xFDFF), \~IDATA (0xF200-0xFDFF), IDATA0 (0xF200-0xFDFF), \~FDATA (0x10000-0x1FFFF), FDATA0 (0x10000-0x1FFFF), \~HDATA (0x10000-0x1FFFF), HDATA0 (0x10000-0x1FFFF), \~XDATA (0x10000-0x1FFFF), XDATA0 (0x10000-0x1FFFF))
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 49150,-1,()()()()()()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 3,0,0  // Target 'MCB167-NET - HW Debug'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=0
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_mcb167net_debug)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=1
+ Browse=1
+ LstDir (.\lst\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=4
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=0
+ UseOnchipXRAM2=0
+ NearRam=0
+ NearRom=0
+ ExtMem 0 0,0,262143
+ ExtMem 1 1,262144,262143
+ ExtMem 2 0,0,0
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=6
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=3
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define (MCB167NET LWIP_DEBUG __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=1
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab (0x010000 - 0x03FFFE)
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses ()
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 49150,-1,()()()()()()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 4,0,0  // Target 'MCB167-NET - HW Release'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=0
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_mcb167net_release)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=0
+ Browse=0
+ LstDir (.\bin\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=4
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=0
+ UseOnchipXRAM2=0
+ NearRam=0
+ NearRom=0
+ ExtMem 0 1,0,262143
+ ExtMem 1 0,262144,262143
+ ExtMem 2 0,0,0
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=6
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=3
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define (MCB167NET __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=1
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab (0x010000 - 0x03FFFE)
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses ()
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 49150,-1,()()()()()()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 5,0,0  // Target 'Simulator - Debug'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=12
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_simulator_debug)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=1
+ Browse=1
+ LstDir (.\lst\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=6
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=1
+ UseOnchipXRAM2=1
+ NearRam=0
+ NearRom=0
+ ExtMem 0 0,0,262143
+ ExtMem 1 1,262144,262143
+ ExtMem 2 1,0,0
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=0
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=3
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define (MCB167NET LWIP_DEBUG SIMULATOR __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=1
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab (0x010000 - 0x03FFFE)
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses ()
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 49149,-1,()()()()(.\toolbar.ini)()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 6,0,0  // Target 'Simulator - Release'
+ Device (C167CS-LM)
+ Vendor (Infineon)
+ Cpu (IRAM (0xF200 - 0xFDFF) XRAM(0xE000-0xE7FF) XRAM2 (0xC000-0xD7FF) ICAN(0xE800-0xEFFF) CLOCK(25000000) MOD167)
+ FlashUt ()
+ StupF ()
+ FlashDR ()
+ Rgf (C167CS.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg ()
+ OrgReg ()
+ TgStat=0
+ OutDir (.\bin\)
+ OutName (ipsec-interceptdemo_simulator_release)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=0
+ Browse=0
+ LstDir (.\lst\)
+ HexSel=0
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ Model=6
+ RTOS=0
+ nHold=6
+ iHold=65535
+ sHold=65535
+ bHold=65535
+ MOD167=1
+ MODV2=0
+ UseOnChipRom=0
+ UseOnchipXCAN=0
+ UseOnchipXRAM2=0
+ NearRam=0
+ NearRom=0
+ ExtMem 0 1,0,262143
+ ExtMem 1 0,262144,262143
+ ExtMem 2 0,0,0
+ ExtMem 3 0,0,0
+ ExtMem 4 0,0,0
+ ExtMem 5 0,0,0
+ Optimize=6
+ SpeedSize=1
+ RegColor=0
+ Static=0
+ WarningLev=3
+ Alias=1
+ Order=0
+ UnsignedChar=0
+ NoDppSave=1
+ Float64=0
+ SaveUsr=0
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define (MCB167NET SIMULATOR __NO_TCPIP_STACK__)
+ Undefine ()
+ INCC6 (..\..\..\ipsec\src\include)
+ EC166 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ECMISC ()
+ ECDEFINE ()
+ ECUNDEF ()
+ ECINC ()
+ MPL=1
+ CASE=0
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ useLinkFile=0
+ LnkFile ()
+ LinkOnly=0
+ UseTargSet=1
+ DppUse=0
+ nDataSel=2
+ nConstSel=1
+ NearDataStr ()
+ NearConstStr ()
+ CinitTab (0x010000 - 0x03FFFE)
+ IntVectAddr ()
+ lWarnLev=2
+ lDisWarn ()
+ lAssign ()
+ lRegbank ()
+ lReserve (8-11,0xac-0xaf)
+ lMisc ()
+ lClasses ()
+ lSect ()
+  OPTDL (S166.DLL)()(D167.DLL)(-p167CS)(S166.DLL)()(T167.DLL)(-p167CS)
+  OPTDBG 49149,-1,()()()()(.\toolbar.ini)()()()()(.\toolbar.ini) (MONITOR\MON166.DLL)()()()
+ FLASH1 { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 ("" ())
+EndOpt
+
+Options 1,4,24  // File 'Start-pC167HSE.a66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 1,4,25  // File 'SERINIT.A66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 2,4,25  // File 'SERINIT.A66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 3,4,24  // File 'Start-pC167HSE.a66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 3,4,25  // File 'SERINIT.A66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 4,4,24  // File 'Start-pC167HSE.a66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 4,4,25  // File 'SERINIT.A66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 5,2,12  // File 'des_test.c'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=2
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ Optimize=8
+ SpeedSize=2
+ RegColor=2
+ Static=2
+ WarningLev=4
+ Alias=2
+ Order=2
+ UnsignedChar=2
+ NoDppSave=2
+ Float64=2
+ SaveUsr=2
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define ()
+ Undefine ()
+ INCC6 ()
+EndOpt
+
+Options 5,2,15  // File 'util_test.c'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=2
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ Optimize=8
+ SpeedSize=2
+ RegColor=2
+ Static=2
+ WarningLev=4
+ Alias=2
+ Order=2
+ UnsignedChar=2
+ NoDppSave=2
+ Float64=2
+ SaveUsr=2
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define ()
+ Undefine ()
+ INCC6 ()
+EndOpt
+
+Options 5,2,16  // File 'md5_test.c'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=2
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ Optimize=8
+ SpeedSize=2
+ RegColor=2
+ Static=2
+ WarningLev=4
+ Alias=2
+ Order=2
+ UnsignedChar=2
+ NoDppSave=2
+ Float64=2
+ SaveUsr=2
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define ()
+ Undefine ()
+ INCC6 ()
+EndOpt
+
+Options 5,2,17  // File 'sha1_test.c'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=2
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ Optimize=8
+ SpeedSize=2
+ RegColor=2
+ Static=2
+ WarningLev=4
+ Alias=2
+ Order=2
+ UnsignedChar=2
+ NoDppSave=2
+ Float64=2
+ SaveUsr=2
+ Reorder=0
+ cMisc (MOD167 extins)
+ Define ()
+ Undefine ()
+ INCC6 ()
+EndOpt
+
+Options 5,4,24  // File 'Start-pC167HSE.a66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
+Options 6,4,24  // File 'Start-pC167HSE.a66'
+ PropFld { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=0
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ MPL=2
+ CASE=2
+ aMisc (MOD167)
+ aSet ()
+ aReset ()
+ INCA6 ()
+EndOpt
+
