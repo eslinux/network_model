@@ -88,7 +88,7 @@ test_set test_function_set[] =
 //			{ md5_test, 		"md5_test"			},
 //			{ sha1_test,		"sha1_test"			},
 //			{ sa_test, 			"sa_test"			},
-//			{ ah_test, 			"ah_test"			},
+			{ ah_test, 			"ah_test"			},
 			{ esp_test,			"esp_test"			}
 } ;
 
@@ -121,6 +121,9 @@ int main(int argc, char **argv)
 	/* loop and execute all test functions */
   	for (i = 0; i < NR_OF_TESTFUNCTIONS; i++)
 	{
+		printf("#====================================================\n");
+		printf("#  %s  \n", test_function_set[i].name);
+		printf("#====================================================\n");
 		test_function_set[i].function((test_result *)&global_results);
 		printf("\n");
 	}

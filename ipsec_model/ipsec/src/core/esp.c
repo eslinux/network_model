@@ -110,9 +110,6 @@ __u8 ipsec_esp_get_padding(int len, __u8 enc_alg)
 		break;
 	}
 
-//	printf("align padding: %d \n", align);
-
-
 	for(padding = 0; padding < align; padding++)
 		if(((len+padding) % align) == 0)
 			break ;
@@ -196,7 +193,7 @@ ipsec_status ipsec_esp_decapsulate(ipsec_ip_header *packet, int *offset, int *le
 			//			                 const unsigned char *message, unsigned int message_len,
 			//			                 unsigned char *mac, unsigned mac_size);
 
-			hmac_sha224((unsigned char *)sa->authkey, sa->auth_key_len,
+			hmac_sha224((unsigned char *)sa->authkey, sa->auth_key_len/8,
 						(unsigned char *)esp_header, payload_len- sa->icv_bytes_len +IPSEC_ESP_HDR_SIZE,
 						(unsigned char *)&digest, sa->icv_bytes_len);
 
@@ -382,7 +379,7 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 	/* save TOS from inner header */
 	tos = packet->tos ;
 
-	/** @todo fix TTL update and checksum calculation */
+	/** @FIXME TTL update and checksum calculation */
 	// packet->ttl--;
 	// packet->chksum = ip_chksum(packet, sizeof(ip_header));
 	if (packet->ttl == 0)
@@ -415,7 +412,6 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 	printf("inner_len: %d \n", inner_len);
 	printf("padd_len: %d \n", padd_len);
 	printf("payload_len: %d \n", payload_len);
-	printf("%s<%d> \n", __FUNCTION__, __LINE__);
 
 	print_hex(sa->iv, sa->iv_bytes_len, "iv");
 
@@ -426,50 +422,16 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 		cipher_3des_cbc((__u8 *)packet, inner_len+padd_len+2,
 						(__u8 *)sa->enckey, sa->iv,
 						DES_ENCRYPT, (__u8 *)packet);
-
-		//		void cipher_3des_cbc(unsigned char* text, int text_len,
-		//		                     unsigned char* key, unsigned char* iv,
-		//							 int mode, unsigned char*  output)
 		break;
 	case IPSEC_AES_CBC:{
-
-		//		print_hex(sa->enckey, sa->enc_key_len/8, "enckey");
-		//		print_hex(sa->iv, sa->iv_bytes_len, "iv");
-		//		print_hex((__u8 *)packet, 64, "packet");
-
-
-
-
-		//		unsigned char aes_key[sa->enc_key_len/8];
 		unsigned char iv_enc[AES_BLOCK_SIZE];
-		//		unsigned char aes_input[(inner_len+padd_len+2)];
-
-		//		memcpy(aes_key, sa->enckey, (sa->enc_key_len/8));
 		memcpy(iv_enc, sa->iv, sa->iv_bytes_len);
-		//		memcpy(aes_input, (__u8 *)packet, (inner_len+padd_len+2));
 
 
-		//		print_hex(aes_key, sa->enc_key_len/8, "enckey");
-		//		print_hex(iv_enc, sa->iv_bytes_len, "iv");
-		//		print_hex(aes_input, (inner_len+padd_len+2), "packet");
-
-
-		// buffers for encryption and decryption
-		//		size_t inputslength = sizeof(aes_input) ;
-		//		const size_t encslength = ((inputslength + AES_BLOCK_SIZE) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
-		//		unsigned char enc_out[encslength];
-		//		unsigned char dec_out[inputslength];
-		//		memset(enc_out, 0, sizeof(enc_out));
-		//		memset(dec_out, 0, sizeof(dec_out));
-
-		AES_KEY enc_key/*, dec_key*/;
+		AES_KEY enc_key;
 		AES_set_encrypt_key(sa->enckey, sa->enc_key_len, &enc_key);
 		AES_cbc_encrypt((__u8 *)packet, (__u8 *)packet, (inner_len+padd_len+2), &enc_key, iv_enc, AES_ENCRYPT);
 		print_hex((__u8 *)packet, (inner_len+padd_len+2), "packet encrypted");
-
-		//		AES_set_decrypt_key(sa->enckey, sa->enc_key_len, &dec_key);
-		//		AES_cbc_encrypt((__u8 *)packet, dec_out, encslength, &dec_key, iv_enc, AES_DECRYPT);
-		//		print_hex(dec_out, inputslength, "packet decrypted");
 
 	}
 		break;
@@ -479,15 +441,31 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 
 
 		break;
-	case IPSEC_AES_OFB:
+	case IPSEC_AES_OFB:{
+		unsigned char iv_enc[AES_BLOCK_SIZE];
+		memcpy(iv_enc, sa->iv, sa->iv_bytes_len);
+
+
+
+	}
+		break;
+	case IPSEC_AES_CFB:{
+		unsigned char iv_enc[AES_BLOCK_SIZE];
+		memcpy(iv_enc, sa->iv, sa->iv_bytes_len);
+
+
+
+	}
 
 
 		break;
-	case IPSEC_AES_CFB:
+	case IPSEC_AES_CTR:{
+		unsigned char iv_enc[AES_BLOCK_SIZE];
+		memcpy(iv_enc, sa->iv, sa->iv_bytes_len);
 
 
-		break;
-	case IPSEC_AES_CTR:
+
+	}
 
 
 		break;
@@ -533,20 +511,11 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 					  (unsigned char *)sa->authkey, sa->auth_key_len/*IPSEC_AUTH_SHA1_KEY_LEN*/, (unsigned char *)&digest);
 			ret_val = IPSEC_STATUS_SUCCESS;
 
-			//			void hmac_sha1(unsigned char* text, int text_len,
-			//						   unsigned char*  key, int key_len, unsigned char*  digest)
-
-
 			break;
 		case IPSEC_HMAC_SHA224:
 			printf("IPSEC_HMAC_SHA224 \n");
 
-			//			void hmac_sha224(const unsigned char *key, unsigned int key_size,
-			//			                 const unsigned char *message, unsigned int message_len,
-			//			                 unsigned char *mac, unsigned mac_size);
-
-
-			hmac_sha224((unsigned char *)sa->authkey, sa->auth_key_len,
+			hmac_sha224((unsigned char *)sa->authkey, sa->auth_key_len/8,
 						(unsigned char *)new_esp_header, payload_len,
 						(unsigned char *)&digest, sa->icv_bytes_len);
 
@@ -604,9 +573,9 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 	new_ip_header->v_hl = 0x45 ;
 	new_ip_header->tos = tos ;
 	new_ip_header->len = ipsec_htons(payload_len+ IPSEC_MIN_IPHDR_SIZE);
-	new_ip_header->id = 1000 ;	/**@todo id must be generated properly and incremented */
-	new_ip_header->offset = 0 ;
-	new_ip_header->ttl = 64 ;
+	new_ip_header->id = 1000 ;	/**@FIXME id must be generated properly and incremented */
+	new_ip_header->offset = 0 ; /*@FIXME set value for offset*/
+	new_ip_header->ttl = 64 ; /*@FIXME set value for ttl*/
 	new_ip_header->protocol = IPSEC_PROTO_ESP ;
 	new_ip_header->chksum = 0 ;
 	new_ip_header->src = src_addr ;
@@ -614,9 +583,8 @@ ipsec_status ipsec_esp_encapsulate(ipsec_ip_header *packet, int *offset, int *le
 
 	/* set checksum */
 	new_ip_header->chksum = ipsec_ip_chksum(new_ip_header, sizeof(ipsec_ip_header)) ;
-	//45000078e80300004032b42a ac114301 ac114302
 
-	print_hex((char *)new_ip_header, (payload_len + IPSEC_MIN_IPHDR_SIZE), "new_ip_header");
+	print_hex((char *)new_ip_header, (payload_len + IPSEC_MIN_IPHDR_SIZE), "ipsec new_ip_header");
 
 
 	/* setup return values */

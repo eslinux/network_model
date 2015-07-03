@@ -57,15 +57,15 @@ typedef struct ah_hdr_struct
   __u16 reserved;	/**< MUST be 0x0000 (reserved for future use) */
   __u32 spi;		/**< Security Parameter Index (0, 1..255 are special cases RFC2402, p.4) */
   __u32 sequence;	/**< sequence number (increasing strictly), used by anti-replay feature */
-  __u8  ah_data[20 /*IPSEC_AUTH_ICV*/]; /**< ICV (Integrity Check Value), variable-length data. 12 bytes (96 bits) for HMAC-SHA1-96 and HMAC-MD5-96 */
+  __u8  ah_data[32 /*IPSEC_MAX_AUTHKEY_LEN*/]; /**< ICV (Integrity Check Value), variable-length data. 12 bytes (96 bits) for HMAC-SHA1-96 and HMAC-MD5-96 */
 } ipsec_ah_header;
 
 
 extern __u32 ipsec_ah_bitmap; 			/**< bitmap used for anti-replay service */
 extern __u32 ipsec_ah_lastSeq;			/**< last seen sequence number, used for anit-replay service */
 
-//int ipsec_ah_check(ipsec_ip_header *, int *, int *, void *);
-int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payload_size, void *satmp);
+//int ipsec_ah_decapsulate(ipsec_ip_header *, int *, int *, void *);
+int ipsec_ah_decapsulate(ipsec_ip_header *outer_packet, int *payload_offset, int *payload_size, void *satmp);
 //int ipsec_ah_encapsulate(ipsec_ip_header *, int *, int *, void *, __u32, __u32);
 int ipsec_ah_encapsulate(ipsec_ip_header *inner_packet, int *payload_offset, int *payload_size, void *satmp, __u32 src, __u32 dst );
 

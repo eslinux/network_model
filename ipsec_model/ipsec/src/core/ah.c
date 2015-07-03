@@ -97,7 +97,7 @@ __u32 ipsec_ah_lastSeq 	= 0;         		/**< save session state to detect replays
  * @return IPSEC_STATUS_FAILURE         packet is corrupted or ICV does not match
  * @return IPSEC_STATUS_NOT_IMPLEMENTED invalid mode (only IPSEC_TUNNEL mode is implemented)
  */
-int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payload_size, void *satmp)
+int ipsec_ah_decapsulate(ipsec_ip_header *outer_packet, int *payload_offset, int *payload_size, void *satmp)
 {
 	sad_entry *sa = (sad_entry*)satmp;
 	int ret_val 	= IPSEC_STATUS_NOT_INITIALIZED;	/* by default, the return value is undefined */
@@ -108,23 +108,38 @@ int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payl
 	unsigned char digest[IPSEC_MAX_AUTHKEY_LEN];
 
 	IPSEC_LOG_TRC(IPSEC_TRACE_ENTER,
-	              "ipsec_ah_check",
+				  "ipsec_ah_decapsulate",
 				  ("outer_packet=%p, *payload_offset=%d, *payload_size=%d sa=%p",
-			      (void *)outer_packet, *payload_offset, *payload_size, (void *)sa)
-				 );
+				   (void *)outer_packet, *payload_offset, *payload_size, (void *)sa)
+				  );
 
 	/* The AH header is expected to be 24 bytes since we support only 96 bit authentication values */
-	ah_offs = ((outer_packet->v_hl & 0x0F) << 2);
+	ah_offs = ((outer_packet->v_hl & 0x0F) << 2);//point to ah header
+
+	/*
+	 * len = 3 header + icv - 2   (word)
+	 * icv = len - 1              (word)
+	 * icv = len*4 - 4            (byte)
+	 * ah_len = header size + icv
+	 *        = 3 header -4 + len*4
+	*/
 	ah_len = (IPSEC_AH_HDR_SIZE - 4) + ( ((ipsec_ah_header *)((unsigned char *)outer_packet + ah_offs))->len << 2 );
 
+
+//	printf("ah_len: %d \n", ah_len);
+//	printf("icv_bytes_len: %d \n", sa->icv_bytes_len);
+//	printf("ah_offs: %d \n", ah_offs);
+//	printf("len: %d \n", ( ((ipsec_ah_header *)((unsigned char *)outer_packet + ah_offs))->len << 2 ));
+
 	/* minimal AH header + ICV */
-	if(ah_len != IPSEC_AH_HDR_SIZE + IPSEC_AUTH_ICV)
+	if(ah_len != IPSEC_AH_HDR_SIZE + sa->icv_bytes_len)
 	{
-		IPSEC_LOG_DBG("ipsec_ah_check", IPSEC_STATUS_FAILURE, ("wrong AH header size: ah_len=%d (must be 24 bytes, only 96bit authentication values allowed)", ah_len) );
-		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_check", ("return = %d", IPSEC_STATUS_FAILURE) );
+		IPSEC_LOG_DBG("ipsec_ah_decapsulate", IPSEC_STATUS_FAILURE, ("wrong AH header size: ah_len=%d (must be 24 bytes, only 96bit authentication values allowed)", ah_len) );
+		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_decapsulate", ("return = %d", IPSEC_STATUS_FAILURE) );
 		return IPSEC_STATUS_FAILURE;
 	}
 	
+
 	ah_header = ((ipsec_ah_header *)((unsigned char *)outer_packet + ah_offs));
 
 	/* preliminary anti-replay check (without updating the global sequence number window)     */
@@ -132,11 +147,11 @@ int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payl
 	ret_val = ipsec_check_replay_window(ipsec_ntohl(ah_header->sequence), ipsec_ah_lastSeq, ipsec_ah_bitmap);
 	if(ret_val != IPSEC_AUDIT_SUCCESS)
 	{
-		IPSEC_LOG_AUD("ipsec_ah_check", IPSEC_AUDIT_SEQ_MISMATCH, ("packet rejected by anti-replay check (lastSeq=%08lx, seq=%08lx, window size=%d)", ipsec_ah_lastSeq, ipsec_ntohl(ah_header->sequence), IPSEC_SEQ_MAX_WINDOW) );
+		IPSEC_LOG_AUD("ipsec_ah_decapsulate", IPSEC_AUDIT_SEQ_MISMATCH, ("packet rejected by anti-replay check (lastSeq=%08lx, seq=%08lx, window size=%d)", ipsec_ah_lastSeq, ipsec_ntohl(ah_header->sequence), IPSEC_SEQ_MAX_WINDOW) );
 		return ret_val;
 	}
 	
- 	/* zero all mutable fields prior to ICV calculation */
+	/* zero all mutable fields prior to ICV calculation */
 	/* mutuable fields according to RFC2402, 3.3.3.1.1.1. */
 	outer_packet->tos 		= 0;
 	outer_packet->offset	= 0;
@@ -144,50 +159,92 @@ int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payl
 	outer_packet->chksum	= 0;
 
 	/* backup 96bit HMAC before setting it to 0 */
-	memcpy(orig_digest, ah_header->ah_data, IPSEC_AUTH_ICV);
-	memset(((ipsec_ah_header *)((unsigned char *)outer_packet + ah_offs))->ah_data, '\0', IPSEC_AUTH_ICV);
+	memcpy(orig_digest, ah_header->ah_data, sa->icv_bytes_len);
+	memset(((ipsec_ah_header *)((unsigned char *)outer_packet + ah_offs))->ah_data, '\0', sa->icv_bytes_len);
 
 	if(sa->mode != IPSEC_TUNNEL)
 	{
-		IPSEC_LOG_ERR("ipsec_ah_check", IPSEC_STATUS_NOT_IMPLEMENTED, ("Can't handle mode %d. Only mode %d (IPSEC_TUNNEL) is implemented.", sa->mode, IPSEC_TUNNEL) );
-		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_check", ("return = %d", IPSEC_STATUS_NOT_IMPLEMENTED) );
+		IPSEC_LOG_ERR("ipsec_ah_decapsulate", IPSEC_STATUS_NOT_IMPLEMENTED, ("Can't handle mode %d. Only mode %d (IPSEC_TUNNEL) is implemented.", sa->mode, IPSEC_TUNNEL) );
+		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_decapsulate", ("return = %d", IPSEC_STATUS_NOT_IMPLEMENTED) );
 		return IPSEC_STATUS_NOT_IMPLEMENTED;
 	}
 
 	switch(sa->auth_alg) {
+	case IPSEC_HMAC_MD5:
+		printf("IPSEC_HMAC_SHA224 \n");
+		hmac_md5((unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+				 (unsigned char *)sa->authkey, sa->icv_bytes_len /*IPSEC_AUTH_MD5_KEY_LEN*/, (unsigned char *)&digest);
+		break;
+	case IPSEC_HMAC_SHA1:
+		printf("IPSEC_HMAC_SHA224 \n");
+		hmac_sha1((unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+				  (unsigned char *)sa->authkey, sa->icv_bytes_len /*IPSEC_AUTH_SHA1_KEY_LEN*/, (unsigned char *)&digest);
 
-		case IPSEC_HMAC_MD5:
-			hmac_md5((unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
-			         (unsigned char *)sa->authkey, IPSEC_AUTH_MD5_KEY_LEN, (unsigned char *)&digest);
-			break;
-		case IPSEC_HMAC_SHA1:
-			hmac_sha1((unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
-			          (unsigned char *)sa->authkey, IPSEC_AUTH_SHA1_KEY_LEN, (unsigned char *)&digest);
-			break;
-		default:
-			IPSEC_LOG_ERR("ipsec_ah_check", IPSEC_STATUS_FAILURE, ("unknown HASH algorithm for this AH")) ;
-			IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_check", ("return = %d", IPSEC_STATUS_FAILURE) );
-			return IPSEC_STATUS_FAILURE;
+		break;
+	case IPSEC_HMAC_SHA224:
+		printf("IPSEC_HMAC_SHA224 \n");
+
+		hmac_sha224((unsigned char *)sa->authkey, sa->auth_key_len/8 /* 224/8 */,
+					(unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	case IPSEC_HMAC_SHA256:
+		printf("IPSEC_HMAC_SHA256 \n");
+
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha256(sa->authkey, sa->auth_key_len/8 /* 256/8 */,
+					(unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		print_hex(digest, sa->icv_bytes_len, "ICV (hmac_sha256)");
+		break;
+	case IPSEC_HMAC_SHA384:
+		printf("IPSEC_HMAC_SHA384 \n");
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha384(sa->authkey, sa->auth_key_len/8 /* 384/8 */,
+					(unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	case IPSEC_HMAC_SHA512:
+		printf("IPSEC_HMAC_SHA512 \n");
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha512(sa->authkey, sa->auth_key_len/8 /* 512/8 */,
+					(unsigned char *)outer_packet, ipsec_ntohs(outer_packet->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	default:
+		IPSEC_LOG_ERR("ipsec_ah_decapsulate", IPSEC_STATUS_FAILURE, ("unknown HASH algorithm for this AH")) ;
+		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_decapsulate", ("return = %d", IPSEC_STATUS_FAILURE) );
+		return IPSEC_STATUS_FAILURE;
 	}
 
-	if(memcmp(orig_digest, digest, IPSEC_AUTH_ICV) != 0) {
-		IPSEC_LOG_ERR("ipsec_ah_check", IPSEC_STATUS_FAILURE, ("AH ICV does not match")) ;
-		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_check", ("return = %d", IPSEC_STATUS_FAILURE) );
+	print_hex(digest, sa->icv_bytes_len, "digest");
+
+	if(memcmp(orig_digest, digest, sa->icv_bytes_len) != 0) {
+		IPSEC_LOG_ERR("ipsec_ah_decapsulate", IPSEC_STATUS_FAILURE, ("AH ICV does not match")) ;
+		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_decapsulate", ("return = %d", IPSEC_STATUS_FAILURE) );
 		return IPSEC_STATUS_FAILURE;
 	}
 	
+
 	/* post-ICV calculationn anti-replay check (this call will update the global sequence number window) */
 	ret_val = ipsec_update_replay_window(ipsec_ntohl(ah_header->sequence), (__u32 *)&ipsec_ah_lastSeq, (__u32 *)&ipsec_ah_bitmap);
 	if(ret_val != IPSEC_AUDIT_SUCCESS)
 	{
-		IPSEC_LOG_AUD("ipsec_ah_check", IPSEC_AUDIT_SEQ_MISMATCH, ("packet rejected by anti-replay update (lastSeq=%08lx, seq=%08lx, window size=%d)", ipsec_ah_lastSeq, ipsec_ntohl(ah_header->sequence), IPSEC_SEQ_MAX_WINDOW) );
+		IPSEC_LOG_AUD("ipsec_ah_decapsulate", IPSEC_AUDIT_SEQ_MISMATCH, ("packet rejected by anti-replay update (lastSeq=%08lx, seq=%08lx, window size=%d)", ipsec_ah_lastSeq, ipsec_ntohl(ah_header->sequence), IPSEC_SEQ_MAX_WINDOW) );
 		return ret_val;
 	}
 	
 	*payload_offset = ah_offs + ah_len;
 	*payload_size   = ipsec_ntohs(((ipsec_ip_header *)((unsigned char *)outer_packet + ah_offs + ah_len))->len);
 
-	IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_check", ("return = %d", IPSEC_STATUS_NOT_IMPLEMENTED) );
+	IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_decapsulate", ("return = %d", IPSEC_STATUS_NOT_IMPLEMENTED) );
 	return IPSEC_STATUS_SUCCESS;
 }
 
@@ -213,27 +270,27 @@ int ipsec_ah_check(ipsec_ip_header *outer_packet, int *payload_offset, int *payl
  */
 int ipsec_ah_encapsulate(ipsec_ip_header *inner_packet, int *payload_offset, int *payload_size,
 						 void *satmp, __u32 src, __u32 dst
-			             )
+						 )
 {
 	sad_entry *sa = (sad_entry*)satmp;
-	int ret_val = IPSEC_STATUS_NOT_INITIALIZED;			/* by default, the return value is undefined */
+//	int ret_val = IPSEC_STATUS_NOT_INITIALIZED;	/* by default, the return value is undefined */
 	ipsec_ip_header		*new_ip_header ;
 	ipsec_ah_header		*new_ah_header;
 	unsigned char 		digest[IPSEC_MAX_AUTHKEY_LEN];
 
 	IPSEC_LOG_TRC(IPSEC_TRACE_ENTER,
-	              "ipsec_ah_encapsulate",
+				  "ipsec_ah_encapsulate",
 				  ("inner_packet=%p, *payload_offset=%d, *payload_size=%d sa=%p, src=%lu, dst=%lu",
-			      (void *)inner_packet, *payload_offset, *payload_size, (void *)sa, src, dst)
-				 );
+				   (void *)inner_packet, *payload_offset, *payload_size, (void *)sa, src, dst)
+				  );
 
 
 	/* set new packet header pointers */
-	new_ip_header = (ipsec_ip_header*)(((char*)inner_packet) - IPSEC_AH_HDR_SIZE - IPSEC_AUTH_ICV - IPSEC_MIN_IPHDR_SIZE) ;
-	new_ah_header = (ipsec_ah_header*)(((char*)inner_packet) - IPSEC_AUTH_ICV - IPSEC_AH_HDR_SIZE) ;
+	new_ip_header = (ipsec_ip_header*)(((char*)inner_packet)  - sa->icv_bytes_len - IPSEC_AH_HDR_SIZE - IPSEC_MIN_IPHDR_SIZE) ;
+	new_ah_header = (ipsec_ah_header*)(((char*)inner_packet) - sa->icv_bytes_len - IPSEC_AH_HDR_SIZE) ;
 
 	/* decrement and check TTL */
-	/** @todo fix TTL update and checksum calculation */
+	/** @FIXME TTL update and checksum calculation */
 	// inner_packet->ttl--;
 	// inner_packet->chksum = ip_chksum(inner_packet, sizeof(ip_header));
 	if (inner_packet->ttl == 0)
@@ -242,68 +299,112 @@ int ipsec_ah_encapsulate(ipsec_ip_header *inner_packet, int *payload_offset, int
 		return IPSEC_STATUS_TTL_EXPIRED;
 	}
 
-	if(IPSEC_AUTH_ICV != 12)
-	{
-		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_encapsulate", ("return = %d", IPSEC_STATUS_NOT_IMPLEMENTED) );
-		return IPSEC_STATUS_NOT_IMPLEMENTED;
-	}
-
 
 	/* increment Sequence Number Field by 1 for each AH packet (1st packet has squ==1) */
 	sa->sequence_number++;
 
 	/* set header fields */
 	new_ah_header->nexthdr	= 0x04;	/* IP in IP */
-	new_ah_header->len  	= 0x04; /* length is 4 for AH with 96bit ICV */
+	new_ah_header->len = (IPSEC_AH_HDR_SIZE/4 + sa->icv_bytes_len/4 - 2);/* length is 4 for AH with 96bit ICV */
 	new_ah_header->reserved	= 0x0000;
 	new_ah_header->spi		= sa->spi;
 	new_ah_header->sequence = ipsec_htonl(sa->sequence_number);
-	memset(new_ah_header->ah_data, '\0', IPSEC_AUTH_ICV);
+	memset(new_ah_header->ah_data, '\0', sa->icv_bytes_len);
+
 
 	/* setup IP header and zero all mutable fields prior to ICV calculation */
 	/* mutable fields according to RFC2402, 3.3.3.1.1.1. */
 	new_ip_header->v_hl 	= 0x45;
-	new_ip_header->tos 		= 0;
-	new_ip_header->len 		= ipsec_htons(ipsec_ntohs(inner_packet->len) + IPSEC_AH_HDR_SIZE + IPSEC_AUTH_ICV + IPSEC_MIN_IPHDR_SIZE);
-	new_ip_header->id 		= 1000 ;	/**@todo id must be generated properly and incremented */
-	new_ip_header->offset 	= 0;
-	new_ip_header->ttl 		= 0;
+	new_ip_header->tos 		= 0; /*must 0 for ah*/
+	new_ip_header->len 		= ipsec_htons(ipsec_ntohs(inner_packet->len) + IPSEC_AH_HDR_SIZE + sa->icv_bytes_len + IPSEC_MIN_IPHDR_SIZE);
+	new_ip_header->id 		= 1000 ;	/**@FIXME id must be generated properly and incremented */
+	new_ip_header->offset 	= 0; /*must 0 for ah*/
+	new_ip_header->ttl 		= 0; /*must 0 for ah*/
 	new_ip_header->protocol = IPSEC_PROTO_AH;
-	new_ip_header->chksum 	= 0;
+	new_ip_header->chksum 	= 0; /*must 0 for ah*/
 	new_ip_header->src 		= src;
 	new_ip_header->dest 	= dst;
 
+
+
+	print_hex((unsigned char*)inner_packet, ipsec_ntohs(inner_packet->len), "inner_packet");
+	print_hex((unsigned char*)new_ip_header, ipsec_ntohs(new_ip_header->len), "new_ip_header before");
+
 	/* calculate AH according the SA */
 	switch(sa->auth_alg) {
+	case IPSEC_HMAC_MD5:
+		printf("IPSEC_HMAC_SHA224 \n");
+		hmac_md5((unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+				 sa->authkey, sa->icv_bytes_len/*IPSEC_AUTH_MD5_KEY_LEN*/, (unsigned char *)&digest);
+		break;
+	case IPSEC_HMAC_SHA1:
+		printf("IPSEC_HMAC_SHA224 \n");
+		hmac_sha1((unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+				  sa->authkey, sa->icv_bytes_len/*IPSEC_AUTH_SHA1_KEY_LEN*/, (unsigned char *)&digest);
 
-		case IPSEC_HMAC_MD5:
-			hmac_md5((unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
-			         (unsigned char *)sa->authkey, IPSEC_AUTH_MD5_KEY_LEN, (unsigned char *)&digest);
-			break;
-		case IPSEC_HMAC_SHA1:
-			hmac_sha1((unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
-			          (unsigned char *)sa->authkey, IPSEC_AUTH_SHA1_KEY_LEN, (unsigned char *)&digest);
-			break;
-		default:
-			IPSEC_LOG_ERR("ipsec_ah_encapsulate", IPSEC_STATUS_FAILURE, ("unknown HASH algorithm for this AH") );
-			IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_encapsulate", ("return = %d", IPSEC_STATUS_FAILURE) );
-			return IPSEC_STATUS_FAILURE;
+		break;
+	case IPSEC_HMAC_SHA224:
+		printf("IPSEC_HMAC_SHA224 \n");
 
+		hmac_sha224(sa->authkey, sa->auth_key_len/8 /* 224/8 */,
+					(unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	case IPSEC_HMAC_SHA256:
+		printf("IPSEC_HMAC_SHA256 \n");
+
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha256(sa->authkey, sa->auth_key_len/8 /* 256/8 */,
+					(unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		print_hex(digest, sa->icv_bytes_len, "ICV (hmac_sha256)");
+		break;
+	case IPSEC_HMAC_SHA384:
+		printf("IPSEC_HMAC_SHA384 \n");
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha384(sa->authkey, sa->auth_key_len/8 /* 384/8 */,
+					(unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	case IPSEC_HMAC_SHA512:
+		printf("IPSEC_HMAC_SHA512 \n");
+		print_hex(sa->authkey, sa->auth_key_len/8, "authkey");
+
+		hmac_sha512(sa->authkey, sa->auth_key_len/8 /* 512/8 */,
+					(unsigned char *)new_ip_header, ipsec_ntohs(new_ip_header->len),
+					(unsigned char *)&digest, sa->icv_bytes_len);
+
+		break;
+	default:
+		IPSEC_LOG_ERR("ipsec_ah_encapsulate", IPSEC_STATUS_FAILURE, ("unknown HASH algorithm for this AH") );
+		IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_encapsulate", ("return = %d", IPSEC_STATUS_FAILURE) );
+		return IPSEC_STATUS_FAILURE;
 	}
 
+
 	/* insert ICV */
-	memcpy(new_ah_header->ah_data, digest, IPSEC_AUTH_ICV);
+	memcpy(new_ah_header->ah_data, digest, sa->icv_bytes_len);
+
 
 	/* update outer IP header */
 	new_ip_header->tos = inner_packet->tos ;
-	new_ip_header->ttl = 64 ;
+	new_ip_header->ttl = 64 ; /*@FIXME set value for ttl*/
+	new_ip_header->offset 	= 0; /*@FIXME set value for offset*/
 
 	/* set checksum */
-	new_ip_header->chksum = ipsec_ip_chksum(new_ip_header, sizeof(ipsec_ip_header)) ;
+	new_ip_header->chksum = ipsec_ip_chksum(new_ip_header, sizeof(ipsec_ip_header));
 
 	/* setup return values */
 	*payload_size 	= ipsec_ntohs(new_ip_header->len);
 	*payload_offset = (((char*)new_ip_header) - ((char*)inner_packet)) ;
+
+//	print_hex((unsigned char*)new_ip_header +20 + 12, 12, "new_ip_header affter");
+	print_hex((unsigned char*)new_ip_header, ipsec_ntohs(new_ip_header->len), "new_ip_header affter");
 
 	IPSEC_LOG_TRC(IPSEC_TRACE_RETURN, "ipsec_ah_encapsulate", ("return = %d", IPSEC_STATUS_SUCCESS) );
 	return IPSEC_STATUS_SUCCESS;

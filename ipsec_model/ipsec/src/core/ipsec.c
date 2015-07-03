@@ -68,7 +68,7 @@
  *
  * This function is called by the ipsec device driver when a packet arrives having AH or ESP in the 
  * protocol field. A SA lookup gets the appropriate SA which is then passed to the packet processing 
- * funciton ipsec_ah_check() or ipsec_esp_decapsulate(). After successfully processing an IPsec packet
+ * funciton ipsec_ah_decapsulate() or ipsec_esp_decapsulate(). After successfully processing an IPsec packet
  * an check together with an SPD lookup verifies if the packet was processed acording the right SA.
  *
  * @param  packet         pointer used to access the intercepted original packet
@@ -119,7 +119,7 @@ int ipsec_input(unsigned char *packet, int packet_size,
 
 	if(sa->protocol == IPSEC_PROTO_AH)
 	{
-		ret_val = ipsec_ah_check((ipsec_ip_header *)packet, payload_offset, payload_size, sa);
+		ret_val = ipsec_ah_decapsulate((ipsec_ip_header *)packet, payload_offset, payload_size, sa);
 		if(ret_val != IPSEC_STATUS_SUCCESS) 
 		{
 			IPSEC_LOG_ERR("ipsec_input", ret_val, ("ah_packet_check() failed") );
@@ -179,7 +179,7 @@ int ipsec_input(unsigned char *packet, int packet_size,
  *  IPsec output processing
  *
  * This function is called when outbound packets need IPsec processing. Depending the SA, passed via
- * the SPD entry ipsec_ah_check() and ipsec_esp_encapsulate() is called to encapsulate the packet in a
+ * the SPD entry ipsec_ah_decapsulate() and ipsec_esp_encapsulate() is called to encapsulate the packet in a
  * IPsec header.
  *
  * @param  packet         pointer used to access the intercepted original packet
@@ -227,7 +227,7 @@ int ipsec_output(unsigned char *packet, int packet_size, int *payload_offset, in
 	switch(spd->sa->protocol) {
 		case IPSEC_PROTO_AH:
 				IPSEC_LOG_MSG("ipsec_output", ("have to encapsulate an AH packet")) ;
-				ret_val = ipsec_ah_encapsulate((ipsec_ip_header *)packet, payload_offset, payload_size, spd->sa, src, dst);
+				ret_val = ipsec_ah_encapsulate((ipsec_ip_header *)packet, payload_offset, payload_size, (void*)spd->sa, src, dst);
 		
 				if(ret_val != IPSEC_STATUS_SUCCESS) 
 				{
